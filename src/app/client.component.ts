@@ -18,17 +18,16 @@ import {AutoComplete} from "./autocomplete/autocomplete"
                 </div>                 
             </div>
         </div>
-         <div class="row">
-          <div class="col-md-4">
-        <div *ngIf='!!selectedValue'>
-         <div><strong>Selected item:</strong></div>
-         <br>
-         <i>
-         {{selectedValue}}
-         </i>
-        </div>
-        
-    </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div *ngIf='!!selectedValue'>
+                    <div><strong>Selected item:</strong></div>
+                    <br>
+                    <i>
+                        {{selectedValue}}
+                    </i>
+                </div>
+            </div>
         </div>
     </section>
   `,

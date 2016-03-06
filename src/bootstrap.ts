@@ -13,9 +13,5 @@ const PROVIDERS = [
     ...ROUTER_PROVIDERS ,
     ElasticSearchService   
 ];
-//smth
 
 bootstrap(App, PROVIDERS)
-    .then((appRef: ComponentRef) => {
-      
-    }, error => console.log(error))

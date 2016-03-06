@@ -1,13 +1,9 @@
 import {Injectable} from 'angular2/core';
-import {Http, Headers, Response} from 'angular2/http';
-import {Observable, Observer, ConnectableObservable} from 'rxjs';
+import {Observable} from 'rxjs';
 import * as elasticsearch from "elasticsearch";
 
 @Injectable()
-export class ElasticSearchService {
-    constructor() {
-
-    }
+export class ElasticSearchService {    
     search(value): Observable<any> {
         console.log(value)
         var client = new elasticsearch.Client({

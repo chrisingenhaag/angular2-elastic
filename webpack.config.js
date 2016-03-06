@@ -1,7 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
 var webpackMerge = require('webpack-merge');
-
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -15,7 +14,7 @@ var default_config = {
     module: {
         loaders: [
             { test: /\.html$/, loader: "raw" },
-            { test: /\.css$/, loader: "raw" },           
+            { test: /\.css$/, loader: "raw" },
             { test: /\.(png|jpg)$/, loader: "url?limit=25000" },
             { test: /\.jpe?g$|\.gif$|\.png$|\.wav$|\.mp3$|\.otf$/, loader: "file" },
             { test: /\.(ttf|eot|svg|woff|woff2)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file" },
@@ -48,9 +47,9 @@ module.exports = webpackMerge(default_config, {
         pathinfo: false
     },
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(true),        
+        new webpack.optimize.OccurenceOrderPlugin(true),
         new CopyWebpackPlugin([{ from: 'src/assets', to: 'assets' }]),
-        new webpack.optimize.CommonsChunkPlugin("vendors", "vendors.js", Infinity),       
+        new webpack.optimize.CommonsChunkPlugin("vendors", "vendors.js", Infinity),
         new HtmlWebpackPlugin({ template: 'src/index.html' })
     ],
     devServer: {
