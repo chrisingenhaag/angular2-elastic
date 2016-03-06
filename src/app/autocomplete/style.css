@@ -16,11 +16,8 @@
     font-size: 20px;
     color: dimgrey;
     box-shadow: #eaeaea 1px 1px;  
-   /* box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.2);*/
     border-top: 1px solid rgba(0, 0, 0, 0.2);
     padding:0 5px;
-  
-    
 }
 
 .sb-search-input::-webkit-input-placeholder {
@@ -39,7 +36,6 @@
     color: #efefef;
 }
 
-
 ul.sb-results-dropdown-menu {
     margin: 0;
     padding: 0;    
@@ -52,13 +48,6 @@ ul.sb-results-dropdown-menu > li {
     padding: 15px;
     list-style: none;
     background: white;
-}
-
-ul.sb-results-dropdown-menu > li img {
-    border-radius:50%;
-    display:inline-block;
-    width:40px;
-    height:40px;
 }
 
 ul.sb-results-dropdown-menu > li span {

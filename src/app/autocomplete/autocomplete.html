@@ -7,7 +7,7 @@
             placeholder="Search...">
     </div>    
     <div class="sb-message" *ngIf="!!message && !!seachTextModel"><span>{{message}}</span></div>
-    <!--Seach results-->
+    <!--Search results-->
     <div class="sb-seachresults" [ngClass]="{hidden:(results?.length === 0 || !active)}">
         <ul class="sb-results-dropdown-menu">
             <li *ngFor="#result of results" (mousedown)="resutSelected(result)">
