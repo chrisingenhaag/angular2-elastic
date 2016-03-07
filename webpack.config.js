@@ -32,7 +32,8 @@ var default_config = {
                 },
             }
         ],
-    }
+    },
+    devtool: "#inline-source-map"
 };
 
 module.exports = webpackMerge(default_config, {
