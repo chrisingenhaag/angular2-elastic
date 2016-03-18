@@ -22,11 +22,11 @@ npm install
 ```
 Build:
 ```bash
-npm start build
+npm run build
 ```
 Start in dev mode (available on [localhost:3030](localhost:3030) by default)
 ```bush
-npm start dev
+npm run dev
 ```
 Follow this steps: 
 1. Go to admin tab and add something to the elasticsearch index using provided form
