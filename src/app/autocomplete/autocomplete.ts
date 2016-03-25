@@ -11,11 +11,11 @@ import {ElasticSearchService} from '../elasticsearch.service';
     styles: [require('./style.css')]
 })
 
-export class AutoComplete implements OnInit, AfterViewInit {
+export class AutoComplete implements OnInit {
     visible = true;
     seachText: Control;
-    seachTextModel: string;
-    results: Array<string>;
+    seachTextModel: string;    
+    results: rx.Observable<Array<any>>;
     message: string;
     active: boolean = false;
     changed: EventEmitter<any> = new EventEmitter();
@@ -25,57 +25,31 @@ export class AutoComplete implements OnInit, AfterViewInit {
         this.seachText = new Control();
     }
     ngOnInit() {
-        this.seachText
+        this.results = this.seachText
             .valueChanges
-            .map(value => {                                                             // disable space-only input
-                if (value && value.trim()) {
-                    return value.trim();
+            .map((value: any) => value ? value.trim() : '')             // ignore spaces         
+            .do(value => value ? this.message = 'searching...' : this.message = "")
+            .debounceTime(700)                                          // wait when input completed
+            .distinctUntilChanged()
+            .switchMap(value => this.es.search(value))                  // switchable request            
+            .map((esResult: any) => {
+                var results = ((esResult.hits || {}).hits || []);       // extract results
+                if (results.length > 0) {
+                    this.message = '';
+                    return results.map((hit) => hit._source);
                 } else {
-                    return this.cleanControl();                  
+                    if (this.seachTextModel && this.seachTextModel.trim())
+                        this.message = 'nothing was found';
+                    return [];
                 }
             })
-            .filter(value => value)                                                     // stop if empty
-            .do(value => this.message = 'searching...')                                 // every iteration
-            .debounceTime(700)                                                          // wait when input completed  
-            .map((value: string) => value.toLowerCase())                                // depends on search strategy
-            .distinctUntilChanged()
-            .switchMap(value => this.es.search(value))                                  // switchable request
-            .map((esResult: any) =>
-                ((esResult.hits || {}).hits || []).map((hit) => hit._source))           // extract results
-            .subscribe((results) => {
-                this.toggleResults(results);
-            }, (err) => {
-                console.error(err)
-            })
+            .catch(this.handleError);
     }
-    ngAfterViewInit() {
-        rx.Observable.fromEvent(this.input.nativeElement, "blur")
-            .subscribe((event: FocusEvent) => {
-                setTimeout(() => {
-                    this.active = false;
-                }, 100)
-            })
-        rx.Observable.fromEvent(this.input.nativeElement, "focus")
-            .subscribe(() => {
-                this.active = true;
-            })
-    }
+
     resutSelected(result) {
         this.changed.next(result);
     }
-    cleanControl(): any {
-        this.message = null;
-        this.results = [];
-        this.seachTextModel = "";
-        return this.seachTextModel;
-    }
-    toggleResults(results = null) {
-        if (results.length) {
-            this.results = results;
-            this.message = null;
-        } else {
-            this.results = [];
-            this.message = 'nothing was found'
-        }
+    handleError(): any {
+        this.message = "something went wrong";
     }
 }
