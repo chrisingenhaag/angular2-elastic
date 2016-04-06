@@ -1,7 +1,7 @@
 ## Description
 
 * Elasticsearch usage example
-* Autocomplete control developed with angular 2 (b8)
+* Autocomplete control developed with angular 2 (b13)
 
 ##First of all
 * Install elasticsearch server according to the [instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/_installation.html).
