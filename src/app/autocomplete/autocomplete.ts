@@ -24,9 +24,10 @@ export class AutoComplete implements OnInit {
     constructor(private es: ElasticSearchService) {
         this.seachText = new Control();
     }
+    
     ngOnInit() {
         this.results = this.seachText
-            .valueChanges
+            .valueChanges            
             .map((value: any) => value ? value.trim() : '')             // ignore spaces         
             .do(value => value ? this.message = 'searching...' : this.message = "")
             .debounceTime(700)                                          // wait when input completed
