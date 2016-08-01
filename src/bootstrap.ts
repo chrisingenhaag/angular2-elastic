@@ -1,17 +1,20 @@
-import {ComponentRef} from 'angular2/core';
-import {HTTP_PROVIDERS} from 'angular2/http';
-import {FORM_PROVIDERS} from 'angular2/common';
-import {ROUTER_PROVIDERS} from 'angular2/router';
-import {bootstrap} from 'angular2/platform/browser';
+import { ComponentRef } from '@angular/core';
+import { HTTP_PROVIDERS } from '@angular/http';
+import { bootstrap } from '@angular/platform-browser-dynamic';
+import {
+    disableDeprecatedForms,
+    provideForms  } from '@angular/forms';
+import { APP_ROUTER_PROVIDERS } from './app/routes';
 
-import {App} from './app/app';
-import {ElasticSearchService} from "./app/elasticsearch.service"
+import { App } from './app/app';
+import { ElasticSearchService } from "./app/elasticsearch.service";
 
 const PROVIDERS = [
     ...HTTP_PROVIDERS,
-    ...FORM_PROVIDERS,
-    ...ROUTER_PROVIDERS ,
-    ElasticSearchService   
+    ...APP_ROUTER_PROVIDERS,
+    disableDeprecatedForms(),
+    provideForms(),
+    ElasticSearchService
 ];
 
-bootstrap(App, PROVIDERS)
+bootstrap(App, PROVIDERS);

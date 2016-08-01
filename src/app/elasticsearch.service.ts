@@ -1,38 +1,37 @@
-import {Injectable} from 'angular2/core';
-import {Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import * as elasticsearch from "elasticsearch";
 
 @Injectable()
 export class ElasticSearchService {
-    search(value): Observable<any> {
+    private _client: elasticsearch.ClientInterface;
+    constructor() {
+        if (!this._client) this._connect();
+    }
+    search(value): Promise<any> {
         if (value) {
             console.log(value)
-            var client = new elasticsearch.Client({
-                host: 'http://localhost:9200',
-                log: 'trace'
-            });
-            return Observable.fromPromise(client.search({
+            return this._client.search({
                 index: 'blog',
                 q: `title:${value}`
-            }))
-        }else{
-            return Observable.of({})
+            })
+        } else {
+            return Promise.resolve({})
         }
+    }
 
+    addToIndex(value): Promise<any> {
+        return this._client.create(value)
     }
-    addToIndex(value): Observable<any> {
-        var client = new elasticsearch.Client({
+    private _connect() {
+        this._client = new elasticsearch.Client({
             host: 'http://localhost:9200',
             log: 'trace'
         });
-        return Observable.fromPromise(client.create(value))
     }
+
     isAvailable(): Promise<any> {
-        var client = new elasticsearch.Client({
-            host: 'http://localhost:9200',
-            log: 'trace'
-        });
-        return client.ping({
+        return this._client.ping({
             requestTimeout: Infinity,
             hello: "elasticsearch!"
         });

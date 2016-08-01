@@ -1,55 +1,77 @@
-import {Component, OnInit, EventEmitter, ViewChild, ElementRef, AfterViewInit} from 'angular2/core';
-import {CORE_DIRECTIVES, Control, FORM_DIRECTIVES} from 'angular2/common';
-import * as rx from 'rxjs';
-import {ElasticSearchService} from '../elasticsearch.service';
+import { Component, OnInit, AfterViewInit, Output, EventEmitter, OnChanges, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import {
+    FormGroup,
+    FormControl,
+    FormControlName,
+    REACTIVE_FORM_DIRECTIVES
+} from '@angular/forms';
+
+import { Subject, Observable } from 'rxjs';
+import { ElasticSearchService } from '../elasticsearch.service';
 
 @Component({
     selector: 'autocomplete',
     template: require('./autocomplete.html'),
-    directives: [CORE_DIRECTIVES, FORM_DIRECTIVES],
-    outputs: ['changed'],
-    styles: [require('./style.css')]
+    directives: [REACTIVE_FORM_DIRECTIVES],
+    styles: [require('./style.css')],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class AutoComplete implements OnInit {
+export class AutoComplete implements AfterViewInit {
     visible = true;
-    seachText: Control;
-    seachTextModel: string;    
-    results: rx.Observable<Array<any>>;
+    seachTextModel: string;
+    results$: Subject<any> = new Subject();
+    results;
+    count: number;
     message: string;
     active: boolean = false;
-    changed: EventEmitter<any> = new EventEmitter();
-    @ViewChild("seachInput") input: ElementRef;
-
-    constructor(private es: ElasticSearchService) {
-        this.seachText = new Control();
+    form: FormGroup;    
+    @Output()
+    found: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
+    @Output()
+    selected: EventEmitter<any> = new EventEmitter<any>();
+    constructor(private es: ElasticSearchService, private cd: ChangeDetectorRef) {
+        this.form = new FormGroup({
+            seachText: new FormControl('')
+        });
+        this.results$.subscribe((res) => {
+            this.found.emit(res);
+            //    this.cd.markForCheck();
+            //     this.cd.detectChanges();
+        })
     }
-    
-    ngOnInit() {
-        this.results = this.seachText
-            .valueChanges            
-            .map((value: any) => value ? value.trim() : '')             // ignore spaces         
-            .do(value => value ? this.message = 'searching...' : this.message = "")
-            .debounceTime(700)                                          // wait when input completed
+
+    ngOnDestroy() {
+        this.results$.unsubscribe();
+    }
+
+    ngAfterViewInit() {
+        this.form.controls["seachText"]
+            .valueChanges
+            .map((ẗext: any) => ẗext ? ẗext.trim() : '')                            // ignore spaces         
+            .do(searchString => searchString ? this.message = 'searching...' : this.message = "")
+            .debounceTime(500)                                                                              // wait when input completed
             .distinctUntilChanged()
-            .switchMap(value => this.es.search(value))                  // switchable request            
-            .map((esResult: any) => {
-                var results = ((esResult.hits || {}).hits || []);       // extract results
+            .switchMap(searchString => this.es.search(searchString))                                        // switchable request 
+            .map((searchResult: any) => ((searchResult.hits || {}).hits || []).map((hit) => hit._source))   // extract results   
+            .do(results => {                
                 if (results.length > 0) {
-                    this.message = '';
-                    return results.map((hit) => hit._source);
-                } else {
-                    if (this.seachTextModel && this.seachTextModel.trim())
-                        this.message = 'nothing was found';
-                    return [];
+                    this.message = "";
                 }
+                else {
+                    if (this.seachTextModel && this.seachTextModel.trim())
+                        this.message = "nothing was found";
+                }
+
             })
-            .catch(this.handleError);
+            .catch(this.handleError)
+            .subscribe(this.results$);     
     }
 
     resutSelected(result) {
-        this.changed.next(result);
+        this.selected.next(result);
     }
+
     handleError(): any {
         this.message = "something went wrong";
     }
