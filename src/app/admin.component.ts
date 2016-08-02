@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ROUTER_DIRECTIVES } from "@angular/router";
 import * as elasticsearch from "elasticsearch";
 import { FormBuilder, FormGroup, REACTIVE_FORM_DIRECTIVES } from "@angular/forms"
 import { ElasticSearchService } from './elasticsearch.service';
+
 @Component({
     selector: 'admin',
     directives: [ROUTER_DIRECTIVES, REACTIVE_FORM_DIRECTIVES],
@@ -50,7 +51,7 @@ import { ElasticSearchService } from './elasticsearch.service';
                                 Address field is required
                             </div>
                         </div>           
-                        <button type="submit" [disabled]="process" class="btn btn-primary pull-right">Submit</button>
+                        <button type="submit" class="btn btn-primary pull-right">Submit</button>
                     </form>              
                 </div>
             </div>
@@ -61,15 +62,15 @@ import { ElasticSearchService } from './elasticsearch.service';
 export class AdminComponent implements OnInit {
     form: FormGroup;
     client: elasticsearch.ClientInterface;
-    status: string;
-    process: boolean = false;
+    status: string;   
     model: any = {
         index: "blog",
         url: "",
         title: "",
         text: ""
     }
-    constructor(fbuilder: FormBuilder, private es: ElasticSearchService) {
+
+    constructor(fbuilder: FormBuilder, private es: ElasticSearchService, private cd: ChangeDetectorRef) {
         this.form = fbuilder.group({
             index: [""],
             url: [""],
@@ -77,16 +78,20 @@ export class AdminComponent implements OnInit {
             text: [""],
         });
     }
+
     ngOnInit() {
         this.es.isAvailable().then(() => {
             this.status = "OK"
         }, (err) => {
             this.status = "ERROR"
             console.error('Server is down', err);
+        }).then(()=>{
+            //elasticsearch
+            this.cd.detectChanges();
         })
     }
-    onSubmit(value) {
-        this.process = true;
+
+    onSubmit(value) {      
         this.es.addToIndex({
             index: "blog",
             type: 'post',
@@ -99,12 +104,10 @@ export class AdminComponent implements OnInit {
             }
         }).then((result) => {
             console.log(result);
-            alert("Document added, see log for more info");
-            this.process = false;
+            alert("Document added, see log for more info");          
         }, error => {
             alert("Something went wrong, see log for more info")
-            console.error(error);
-            this.process = false;
+            console.error(error);           
         })
     }
 }

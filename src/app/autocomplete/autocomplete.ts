@@ -1,71 +1,75 @@
-import { Component, OnInit, AfterViewInit, Output, EventEmitter, OnChanges, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Output, EventEmitter, NgZone, OnChanges, ChangeDetectionStrategy } from "@angular/core";
 import {
     FormGroup,
     FormControl,
     FormControlName,
     REACTIVE_FORM_DIRECTIVES
-} from '@angular/forms';
+} from "@angular/forms";
 
-import { Subject, Observable } from 'rxjs';
-import { ElasticSearchService } from '../elasticsearch.service';
+import { Subject, Observable } from "rxjs";
+import { ElasticSearchService } from "../elasticsearch.service";
 
 @Component({
-    selector: 'autocomplete',
-    template: require('./autocomplete.html'),
+    selector: "autocomplete",
+    template: require("./autocomplete.html"),
     directives: [REACTIVE_FORM_DIRECTIVES],
-    styles: [require('./style.css')],
+    styles: [require("./style.css")],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class AutoComplete implements AfterViewInit {
-    visible = true;
-    seachTextModel: string;
-    results$: Subject<any> = new Subject();
-    results;
-    count: number;
-    message: string;
-    active: boolean = false;
-    form: FormGroup;    
     @Output()
     found: EventEmitter<Array<any>> = new EventEmitter<Array<any>>();
     @Output()
     selected: EventEmitter<any> = new EventEmitter<any>();
-    constructor(private es: ElasticSearchService, private cd: ChangeDetectorRef) {
-        this.form = new FormGroup({
-            seachText: new FormControl('')
-        });
+
+    seachTextModel: string;
+    results$: Subject<Array<any>> = new Subject<Array<any>>();
+    message: string = "";
+    active: boolean = false;
+    seachText: FormControl = new FormControl("");
+
+    constructor(private es: ElasticSearchService, private _ngZone: NgZone) {
         this.results$.subscribe((res) => {
             this.found.emit(res);
-            //    this.cd.markForCheck();
-            //     this.cd.detectChanges();
-        })
+        });
     }
-
-    ngOnDestroy() {
-        this.results$.unsubscribe();
-    }
-
+   
     ngAfterViewInit() {
-        this.form.controls["seachText"]
+        this.seachText
             .valueChanges
-            .map((ẗext: any) => ẗext ? ẗext.trim() : '')                            // ignore spaces         
-            .do(searchString => searchString ? this.message = 'searching...' : this.message = "")
-            .debounceTime(500)                                                                              // wait when input completed
+            .map((ẗext: any) => ẗext ? ẗext.trim() : "")                                             // ignore spaces         
+            .do(searchString => searchString ? this.message = "searching..." : this.message = "")
+            .debounceTime(500)                                                                      // wait when input completed
             .distinctUntilChanged()
-            .switchMap(searchString => this.es.search(searchString))                                        // switchable request 
-            .map((searchResult: any) => ((searchResult.hits || {}).hits || []).map((hit) => hit._source))   // extract results   
-            .do(results => {                
-                if (results.length > 0) {
-                    this.message = "";
-                }
-                else {
-                    if (this.seachTextModel && this.seachTextModel.trim())
-                        this.message = "nothing was found";
-                }
-
+            .switchMap(searchString => {
+                return new Promise<Array<any>>((resolve, reject) => {
+                    this._ngZone.runOutsideAngular(() => {                                          // perform search operation outside of angular boundaries
+                        this.es.search(searchString)
+                            .then((searchResult) => {
+                                this._ngZone.run(() => {
+                                    let results: Array<any> = ((searchResult.hits || {}).hits || [])// extract results from elastic response
+                                        .map((hit) => hit._source);
+                                    if (results.length > 0) {
+                                        this.message = "";
+                                    }
+                                    else {
+                                        if (this.seachTextModel && this.seachTextModel.trim())
+                                            this.message = "nothing was found";
+                                    }
+                                    resolve(results);
+                                });
+                            })
+                            .catch((error) => {
+                                this._ngZone.run(() => {
+                                    reject(error);
+                                });
+                            });
+                    });
+                });
             })
             .catch(this.handleError)
-            .subscribe(this.results$);     
+            .subscribe(this.results$);
     }
 
     resutSelected(result) {

@@ -1,15 +1,15 @@
 <div class="sb-search">
-    <div class="search-input-wrapper" [formGroup]="form">
-        <input class="sb-search-input" 
-            [(ngModel)]="seachTextModel" 
+    <div class="search-input-wrapper">
+        <input class="sb-search-input"           
             (blur)="active = false" 
             (focus)="active = true"
-            formControlName="seachText"
+            [(ngModel)]="seachTextModel" 
+            [formControl]="seachText"
             placeholder="Search...">
     </div>
     <div class="sb-message" *ngIf="!!message && active"><span>{{ message }}</span></div>
     <!-- Search results -->
-    <div class="sb-seachresults" *ngIf="active"> 
+    <div class="sb-seachresults" [class.hidden]="!active"> 
         <ul class="sb-results-dropdown-menu" >          
             <li *ngFor="let result of results$ | async" (mousedown)="resutSelected(result)">               
                 <span>{{result.title | uppercase}}</span>

@@ -14,7 +14,7 @@ import { AutoComplete } from "./autocomplete/autocomplete"
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <div class="wrapper">
-                    <autocomplete (selected)="autocompleteCanged($event)"></autocomplete>
+                    <autocomplete (selected)="autocompleteCanged($event)" (found)=foundItemsChanged($event)></autocomplete>
                 </div>                 
             </div>
         </div>
@@ -47,5 +47,8 @@ export class ClientComponent {
     }
     autocompleteCanged(value) {
         this.selectedValue = JSON.stringify(value);
+    }
+    foundItemsChanged(items) {
+        // todo something
     }
 }
