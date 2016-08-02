@@ -1,20 +1,20 @@
-import {Component} from 'angular2/core';
-import {Http} from 'angular2/http';
-import {Client} from "elasticsearch";
-import {ROUTER_DIRECTIVES} from "angular2/router";
-import {AutoComplete} from "./autocomplete/autocomplete"
+import { Component } from '@angular/core';
+import { Http } from '@angular/http';
+import { Client } from "elasticsearch";
+import { ROUTER_DIRECTIVES } from "@angular/router";
+import { AutoComplete } from "./autocomplete/autocomplete"
 @Component({
     selector: 'client',
     directives: [ROUTER_DIRECTIVES, AutoComplete],
     template: `
     <section>  
-        <a [routerLink]="['Admin']" class="list-group-item">Admin</a>
+        <a [routerLink]="['/admin']" class="list-group-item">Admin</a>
         <br>
         <br>
         <div class="row">
             <div class="col-md-4 col-md-offset-4">
                 <div class="wrapper">
-                    <autocomplete (changed)="autocompleteCanged($event)"></autocomplete>
+                    <autocomplete (selected)="autocompleteCanged($event)" (found)=foundItemsChanged($event)></autocomplete>
                 </div>                 
             </div>
         </div>
@@ -31,14 +31,14 @@ import {AutoComplete} from "./autocomplete/autocomplete"
         </div>
     </section>
   `,
-  styles:[
-      `
+    styles: [
+        `
       .wrapper{
           background: gray;
           padding: 10px;
       }
       `
-  ]
+    ]
 })
 
 export class ClientComponent {
@@ -47,5 +47,8 @@ export class ClientComponent {
     }
     autocompleteCanged(value) {
         this.selectedValue = JSON.stringify(value);
+    }
+    foundItemsChanged(items) {
+        // todo something
     }
 }
