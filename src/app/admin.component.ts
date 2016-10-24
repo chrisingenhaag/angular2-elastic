@@ -1,12 +1,10 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { ROUTER_DIRECTIVES } from "@angular/router";
-import * as elasticsearch from "elasticsearch";
-import { FormBuilder, FormGroup, REACTIVE_FORM_DIRECTIVES } from "@angular/forms"
+
+import { FormBuilder, FormGroup } from "@angular/forms"
 import { ElasticSearchService } from './elasticsearch.service';
 
 @Component({
     selector: 'admin',
-    directives: [ROUTER_DIRECTIVES, REACTIVE_FORM_DIRECTIVES],
     template: `
         <div> 
             <a [routerLink]="['/']" class="list-group-item">Back to client</a> 
@@ -24,28 +22,28 @@ import { ElasticSearchService } from './elasticsearch.service';
                     <form [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
                         <div class="form-group">
                             <label class="control-label" for="index">Index</label>
-                            <input disabled type="text" class="form-control" id="index" placeholder="index" ngControl="index" [ngModel]="model.index" name="index">
+                            <input type="text" class="form-control" id="index" placeholder="index" formControlName="index" [ngModel]="model.index" name="index">
                             <div *ngIf="form.controls['index'].valid && submitted">
                                 Name field is required
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="url">Post url</label>
-                            <input type="text" class="form-control" id="url" placeholder="Url" ngControl="url" [(ngModel)]="model.url" name="url">
+                            <input type="text" class="form-control" id="url" placeholder="Url" formControlName="url" [(ngModel)]="model.url" name="url">
                             <div *ngIf="form.controls['url'].valid && submitted">
                                 Address field is required
                             </div>
                         </div> 
                         <div class="form-group">
                             <label class="control-label" for="title">Post title</label>
-                            <input type="text" class="form-control" id="title" placeholder="Title" ngControl="title" [(ngModel)]="model.title" name="title">
+                            <input type="text" class="form-control" id="title" placeholder="Title" formControlName="title" [(ngModel)]="model.title" name="title">
                             <div *ngIf="form.controls['title'].valid && submitted">
                                 Address field is required
                             </div>
                         </div> 
                         <div class="form-group">
                             <label class="control-label" for="text">Post text</label>
-                            <textarea type="text" class="form-control" id="text" placeholder="text" ngControl="text" [(ngModel)]="model.text" name="text">
+                            <textarea type="text" class="form-control" id="text" placeholder="text" formControlName="text" [(ngModel)]="model.text" name="text">
                             </textarea>
                             <div *ngIf="form.controls['text'].valid && submitted">
                                 Address field is required
@@ -61,8 +59,7 @@ import { ElasticSearchService } from './elasticsearch.service';
 
 export class AdminComponent implements OnInit {
     form: FormGroup;
-    client: elasticsearch.ClientInterface;
-    status: string;   
+    status: string;
     model: any = {
         index: "blog",
         url: "",
@@ -72,7 +69,7 @@ export class AdminComponent implements OnInit {
 
     constructor(fbuilder: FormBuilder, private es: ElasticSearchService, private cd: ChangeDetectorRef) {
         this.form = fbuilder.group({
-            index: [""],
+            index: [{value: "", disabled: true }],
             url: [""],
             title: [""],
             text: [""],
@@ -85,13 +82,13 @@ export class AdminComponent implements OnInit {
         }, (err) => {
             this.status = "ERROR"
             console.error('Server is down', err);
-        }).then(()=>{
+        }).then(() => {
             //elasticsearch
             this.cd.detectChanges();
         })
     }
 
-    onSubmit(value) {      
+    onSubmit(value) {
         this.es.addToIndex({
             index: "blog",
             type: 'post',
@@ -104,10 +101,10 @@ export class AdminComponent implements OnInit {
             }
         }).then((result) => {
             console.log(result);
-            alert("Document added, see log for more info");          
+            alert("Document added, see log for more info");
         }, error => {
             alert("Something went wrong, see log for more info")
-            console.error(error);           
+            console.error(error);
         })
     }
 }
