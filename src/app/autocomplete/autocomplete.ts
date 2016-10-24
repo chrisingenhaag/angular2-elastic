@@ -2,8 +2,7 @@ import { Component, OnInit, AfterViewInit, Output, EventEmitter, NgZone, OnChang
 import {
     FormGroup,
     FormControl,
-    FormControlName,
-    REACTIVE_FORM_DIRECTIVES
+    FormControlName  
 } from "@angular/forms";
 
 import { Subject, Observable } from "rxjs";
@@ -11,8 +10,7 @@ import { ElasticSearchService } from "../elasticsearch.service";
 
 @Component({
     selector: "autocomplete",
-    template: require("./autocomplete.html"),
-    directives: [REACTIVE_FORM_DIRECTIVES],
+    template: require("./autocomplete.html"),  
     styles: [require("./style.css")],
     changeDetection: ChangeDetectionStrategy.OnPush
 })

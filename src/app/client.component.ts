@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { Http } from '@angular/http';
-import { Client } from "elasticsearch";
-import { ROUTER_DIRECTIVES } from "@angular/router";
+
 import { AutoComplete } from "./autocomplete/autocomplete"
 @Component({
-    selector: 'client',
-    directives: [ROUTER_DIRECTIVES, AutoComplete],
+    selector: 'client',  
     template: `
     <section>  
         <a [routerLink]="['/admin']" class="list-group-item">Admin</a>
