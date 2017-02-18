@@ -89,10 +89,10 @@ module.exports = function makeWebpackConfig() {
             { test: /\.json$/, loader: 'json' },
 
             // all css required in src/app files will be merged in js files
-            { test: /\.css$/, loader: 'raw' },
+            { test: /\.css$/, loader: 'raw-loader' },
             // support for .html as raw text
             // todo: change the loader to something that adds a hash to images
-            { test: /\.html$/, loader: 'raw', exclude: root('src', 'public') }
+            { test: /\.html$/, loader: 'raw-loader', exclude: root('src', 'public') }
         ]
     };
     config.plugins = [
