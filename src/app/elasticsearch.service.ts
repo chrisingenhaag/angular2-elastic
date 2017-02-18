@@ -28,11 +28,11 @@ export class ElasticSearchService {
                 return Promise.resolve({})
             }
         }
-    
+
         addToIndex(value): Promise<any> {
             return this._client.create(value)
         }
-    
+
         isAvailable(): Promise<any> {
             return this._client.ping({
                 requestTimeout: Infinity,
@@ -43,9 +43,19 @@ export class ElasticSearchService {
         if (value) {
             console.log(value)
             return this._client.search({
-                index: 'blog',
-                q: `title:${value}`
-            })
+              body: {
+                size: 10,
+                query: {
+                   match: {
+                      _all: {
+                         query: `${value}`,
+                         operator: 'and',
+                         fuzziness: 2
+                      }
+                   }
+                 }
+               }
+           })
         } else {
             return Promise.resolve({})
         }
@@ -57,8 +67,7 @@ export class ElasticSearchService {
 
     isAvailable(): any {
         return this._client.ping({
-            requestTimeout: Infinity,
-            hello: "elasticsearch!"
+            requestTimeout: 3000
         });
     }
 }
