@@ -44,7 +44,7 @@ export class ElasticSearchService {
             console.log(value)
             return this._client.search({
               body: {
-                size: 10,
+                size: 5,
                 query: {
                    match: {
                       _all: {
