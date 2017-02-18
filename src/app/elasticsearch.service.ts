@@ -16,29 +16,7 @@ export class ElasticSearchService {
             log: 'trace'
         });
     }
-    /*
-        search(value): Promise<SearchResponse<any>> {
-            if (value) {
-                console.log(value)
-                return this._client.search({
-                    index: 'blog',
-                    q: `title:${value}`
-                })
-            } else {
-                return Promise.resolve({})
-            }
-        }
 
-        addToIndex(value): Promise<any> {
-            return this._client.create(value)
-        }
-
-        isAvailable(): Promise<any> {
-            return this._client.ping({
-                requestTimeout: Infinity,
-                hello: "elasticsearch!"
-            });
-        }*/
     search(value): any {
         if (value) {
             console.log(value)
