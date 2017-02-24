@@ -1,0 +1,78 @@
+{
+    "settings": {
+      "analysis": {
+         "filter": {
+            "nGram_filter": {
+               "type": "nGram",
+               "min_gram": 2,
+               "max_gram": 20,
+               "token_chars": [
+                  "letter",
+                  "digit",
+                  "punctuation",
+                  "symbol"
+               ]
+            }
+         },
+         "analyzer": {
+            "nGram_analyzer": {
+               "type": "custom",
+               "tokenizer": "whitespace",
+               "filter": [
+                  "lowercase",
+                  "asciifolding",
+                  "nGram_filter"
+               ]
+            },
+            "whitespace_analyzer": {
+               "type": "custom",
+               "tokenizer": "whitespace",
+               "filter": [
+                  "lowercase",
+                  "asciifolding"
+               ]
+            }
+         }
+      }
+   },
+    "mappings": {
+        "bank" : {
+            "_all": {
+               "analyzer": "nGram_analyzer",
+               "search_analyzer": "whitespace_analyzer"
+            },
+            "properties" : {
+                "account_number" : {
+                    "type" : "integer"
+                },
+                "balance" : {
+                    "type": "integer"
+                },
+                "firstname" : {
+                    "type": "string"
+                },
+                "lastname" : {
+                    "type": "string"
+                },
+                "age" : {
+                    "type": "integer"
+                },
+                "address" : {
+                    "type": "string"
+                },
+                "employer" : {
+                    "type": "string"
+                },
+                "email" : {
+                    "type": "string"
+                },
+                "city" : {
+                    "type": "string"
+                },
+                "state" : {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
