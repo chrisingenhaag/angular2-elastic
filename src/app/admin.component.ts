@@ -6,15 +6,15 @@ import { ElasticSearchService } from './elasticsearch.service';
 @Component({
     selector: 'admin',
     template: `
-        <div> 
-            <a [routerLink]="['/']" class="list-group-item">Back to client</a> 
+        <div>
+            <a [routerLink]="['/']" class="list-group-item">Back to client</a>
             <div class="row">
                 <h5 class="col-md-12">Somewhere in your admin dashboard)</h5>
             </div>
             <div class="row">
                 <h3 class="col-md-12 text-center">Elasticsearch server status: {{status}}</h3>
             </div>
-            <div class="col-md-6 col-md-offset-3">      
+            <div class="col-md-6 col-md-offset-3">
                 <div class="row">
                     <h4 class="col-md-12 text-center">Post index</h4>
                 </div>
@@ -33,14 +33,14 @@ import { ElasticSearchService } from './elasticsearch.service';
                             <div *ngIf="form.controls['url'].valid && submitted">
                                 Address field is required
                             </div>
-                        </div> 
+                        </div>
                         <div class="form-group">
                             <label class="control-label" for="title">Post title</label>
                             <input type="text" class="form-control" id="title" placeholder="Title" formControlName="title" [(ngModel)]="model.title" name="title">
                             <div *ngIf="form.controls['title'].valid && submitted">
                                 Address field is required
                             </div>
-                        </div> 
+                        </div>
                         <div class="form-group">
                             <label class="control-label" for="text">Post text</label>
                             <textarea type="text" class="form-control" id="text" placeholder="text" formControlName="text" [(ngModel)]="model.text" name="text">
@@ -48,9 +48,9 @@ import { ElasticSearchService } from './elasticsearch.service';
                             <div *ngIf="form.controls['text'].valid && submitted">
                                 Address field is required
                             </div>
-                        </div>           
+                        </div>
                         <button type="submit" class="btn btn-primary pull-right">Submit</button>
-                    </form>              
+                    </form>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@ export class AdminComponent implements OnInit {
     form: FormGroup;
     status: string;
     model: any = {
-        index: "blog",
+        index: "bank",
         url: "",
         title: "",
         text: ""

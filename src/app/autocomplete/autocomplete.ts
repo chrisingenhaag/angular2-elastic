@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit, Output, EventEmitter, NgZone, OnChang
 import {
     FormGroup,
     FormControl,
-    FormControlName  
+    FormControlName
 } from "@angular/forms";
 
 import { Subject, Observable } from "rxjs";
@@ -10,7 +10,7 @@ import { ElasticSearchService } from "../elasticsearch.service";
 
 @Component({
     selector: "autocomplete",
-    template: require("./autocomplete.html"),  
+    template: require("./autocomplete.html"),
     styles: [require("./style.css")],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -32,11 +32,11 @@ export class AutoComplete implements AfterViewInit {
             this.found.emit(res);
         });
     }
-   
+
     ngAfterViewInit() {
         this.seachText
             .valueChanges
-            .map((ẗext: any) => ẗext ? ẗext.trim() : "")                                             // ignore spaces         
+            .map((text: any) => text ? text.trim() : "")                                             // ignore spaces
             .do(searchString => searchString ? this.message = "searching..." : this.message = "")
             .debounceTime(500)                                                                      // wait when input completed
             .distinctUntilChanged()
